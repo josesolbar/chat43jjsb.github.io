@@ -1,0 +1,142 @@
+<! DOCTYPE html >
+< html >
+  < cabeza >
+    < meta  charset = " utf-8 " >
+    < meta  name = " viewport " content = " width = device-width, initial-scale = 1 " >
+    < título > Chat </ título >
+    < link  rel = " stylesheet " href = " estilos.css " >
+    <! - Carga el núcleo de Firebase JS SDK ->
+    < script  src = " https://www.gstatic.com/firebasejs/8.3.1/firebase-app.js " > </ script >
+    <! - Agrega el manejo de autenticación. ->
+    < script  src = " https://www.gstatic.com/firebasejs/8.3.1/firebase-auth.js " >
+    </ script >
+    < guión
+    src = " https://www.gstatic.com/firebasejs/8.3.1/firebase-firestore.js " >
+    </ script >
+    < script  src = " js / init.js " > </ script >
+    
+  </ cabeza >
+  < cuerpo >
+    < h1 > Chat </ h1 >
+    < acción del formulario  = " javascript: agrega (); " >
+      < input  id = " texto " type = " text " required  placeholder = " Mensaje " >
+      < botón > Enviar </ botón >
+    </ formulario >
+    < ol  id = " mensajes " > < li > < progress  max = " 100 " > Cargando… </ progress > </ li > </ ol >
+    < guión >
+      // @ts -check
+      / ** Nombre de usuario atenticado por Firebase. * /
+      let  usuario  =  "" ;
+      / ** Conexión al sistema de autenticación de Firebase. * /
+      // @ts -ignore
+      const  auth  = base de  fuego . auth ( ) ;
+      / ** Tipo de autenticación de usuarios. En este caso es con Google. * /
+      // @ts -ignore
+       proveedor  constante =  nueva base de  fuego . auth . GoogleAuthProvider ( ) ;
+      / * Configura el proveedor de Google para que permita seleccionar una
+       * lista. * /
+      proveedor . setCustomParameters ( {  prompt : "select_account"  } ) ;
+      / * Recibe una función que se invoca cada que hay un cambio en la
+       * autenticación y recibe el modelo con las características del usuario. * /
+      auth . onAuthStateChanged (
+        / ** Recibe las características del usuario o null si no ha iniciado
+         * sesión. * /
+        async  usuarioAuth  =>  {
+          if  ( usuarioAuth  &&  usuarioAuth . email )  {
+            // Usuario aceptado.
+            usuario  =  usuarioAuth . correo electrónico ;
+            // Muestra los mensajes del chat.
+            muestraMensajes ( ) ;
+          }  más  {
+            // No ha iniciado sesión. Pide datos para iniciar sesión.
+            aguardar  auth . signInWithRedirect ( proveedor ) ;
+          }
+        } ,
+        // Función que se invoca si hay un error al verificar el usuario.
+        procesaError
+      ) ;
+      / ** Conexión a la base de datos. * /
+      // @ts -ignore
+      const  firestore = base de fuego  . firestore ( ) ; 
+      / ** Agrega un usuario a la base de datos. * /
+      function  agrega ( )  {
+        / * "MENSAJE" es el nombre de la colección a la que se agrega los datos.
+         * "USUARIO", "TEXTO" y "TIMESTAMP" son los nombres de los campos en el
+         * documento.
+         * El timestamp contiene la fecha y hora en que se agrega el registro. * /
+        firestore . colección ( "MENSAJE" ) . agregar ( {
+          USUARIO : usuario ,
+          // @ts -ignore
+          TEXTO : texto . valor . recortar ( ) ,
+          // @ts -ignore
+          TIMESTAMP : base de fuego . firestore . FieldValue . serverTimestamp ( )
+        } ) ;
+      }
+      / ** Muestra los mensajes almacenados en la colección "MENSAJE". Se
+       * actualizado automáticamente. * /
+      function  muestraMensajes ( )  {
+        / * Consulta que se actualiza automáticamente. Pide todos los registros
+         * de la colección "MENSAJE" ordenador por el campo "TIMESTAMP" de forma
+         * descendiente. * /
+        firestore . colección ( "MENSAJE" ) . orderBy ( "TIMESTAMP" ,  "desc" )
+          . onSnapshot (
+            / ** Función que muestra los datos enviados por el servidor. Si los
+             * datos cambian en el servidor, se vuelve a invocar esta función y
+             * recibe los datos actualizados.
+             * @param { Array } querySnapshot estructura parecida a un Array, que
+             * contiene una copia de los datos en el servidor. * /
+            querySnapshot  =>  {
+              // Vacía la lista con los mensajes.
+              // @ts -ignore
+              mensajes . innerHTML  =  "" ;
+              / * Revisa un por uno los registros de la consulta y los muestra.
+               * El iterador "doc" es un registro de la base de datos. * /
+              querySnapshot . paraCada ( doc  =>  {
+                // recupera los datos almacenados en el registro.
+                 datos  constantes =  doc . datos ( ) ;
+                
+                var  d  =  datos . TIMESTAMP . toDate ( ) ,
+                dformat  =  [ d . getDate ( ) ,  d . getMonth ( ) + 1 ,  d . getFullYear ( ) ] . unirse ( '/' ) + '' +
+                          [ d . getHours ( ) , d . getMinutes ( ) , d . getSeconds ( ) ] . unirse ( ':' ) ;
+                / * Agrega un li con los datos del registro, que se codifican
+                 * para evitar inyección de código. * /
+                // @ts -ignore
+                mensajes . innerHTML  + =  / * html * /
+                  `<li> <u> $ { cod ( datos . USUARIO ) } </u> $ { dformat } <br> $ { cod ( datos . TEXTO ) } </li>` ;
+              } )
+            } ,
+            / * Función que se invoca cuando hay un error. Muestra el error. Alabama
+             * invocar esta función la conexión se cancela. Por lo mismo, se
+             * vuelve a conectar. * /
+            e  =>  {
+              procesaError ( e ) ;
+              // Intenta conectarte otra vez.
+              muestraMensajes ( ) ;
+            }
+          )
+      }
+
+      / ** Procesa un error. Muestra el objeto en la consola y un cuadro de
+       * alerta con el mensaje.
+       * @param { Error } e descripción del error. * /
+      function  procesaError ( e )  {
+        consola . log ( e ) ;
+        alerta ( e . mensaje ) ;
+      }
+
+      / ** Mapa que contiene el texto de escape de los caracteres especiales de
+       * HTML.
+       * @type {Readonly <Map <string, string >>} * /
+      const  codMap  =  Objeto . congelar ( mapa nuevo  ( [ [ '&' , '& amp;' ] , [ '<' , '& lt;' ] ,   
+      [ '>' ,  '& gt;' ] ,  [ '"' ,  '& quot;' ] ,  [ "'" ,  ' & # 039; ' ] ] ) ) ;
+
+      / ** Codifica un texto para que escape los caracteres especiales y no se
+       * Puede interpretar como HTML. Esta técnica evita la inyección de código.
+       * @param { cadena } texto
+       * @returns { string } un texto que no puede interpretarse como HTML. * /
+      función  cod ( texto )  {
+        return  ( texto  ||  "" ) . reemplazar ( / [ & <> "' ] / g ,  letra  =>  codMap . get ( letra ) ) ;
+      }
+    </ script >
+  </ cuerpo >
+</ html >
