@@ -2,10 +2,10 @@
 * configuración en tu servidor de Firebase. * /
 // @ts -ignore
 base de fuego . initializeApp ( {
-      apiKey: "AIzaSyBsWj3fsls0tf5ZCbixYvZ-dzCPbokI9YE",
-    authDomain: "chat43jjsb-d9090.firebaseapp.com",
-    projectId: "chat43jjsb-d9090",
-    storageBucket: "chat43jjsb-d9090.appspot.com",
-    messagingSenderId: "671190914187",
-    appId: "1:671190914187:web:f5f1c43ae0fae07115b08e"
+     apiKey: "AIzaSyB1kEDSqJuY8rtZP2AkJSq3c4471qdvNRo",
+    authDomain: "chat43jjsb-7c11a.firebaseapp.com",
+    projectId: "chat43jjsb-7c11a",
+    storageBucket: "chat43jjsb-7c11a.appspot.com",
+    messagingSenderId: "1091109327402",
+    appId: "1:1091109327402:web:b52c743b5fc559b98ba953"
     } ) ;
