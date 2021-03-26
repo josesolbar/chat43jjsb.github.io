@@ -2,11 +2,10 @@
 * configuración en tu servidor de Firebase. * /
 // @ts -ignore
 base de fuego . initializeApp ( {
-    apiKey : "AIzaSyDdapj3H3Dd2w9DHpLHwbzwpwSwU7rItpg" ,
-    authDomain : "chatrickfb.firebaseapp.com" ,
-    projectId : "chatrickfb" ,
-    storageBucket : "chatrickfb.appspot.com" ,
-    messagingSenderId : "815561540833" ,
-    appId : "1: 815561540833: web: 2cf0f52c625e8e281723a0" ,
-    measurementId : "G-5W02XQR53J"
+      apiKey: "AIzaSyBsWj3fsls0tf5ZCbixYvZ-dzCPbokI9YE",
+    authDomain: "chat43jjsb-d9090.firebaseapp.com",
+    projectId: "chat43jjsb-d9090",
+    storageBucket: "chat43jjsb-d9090.appspot.com",
+    messagingSenderId: "671190914187",
+    appId: "1:671190914187:web:f5f1c43ae0fae07115b08e"
     } ) ;
